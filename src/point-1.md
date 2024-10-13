@@ -86,11 +86,11 @@ IP adottati", quindi seguiamo questa direttiva ed elenchiamo le prime quattro re
 Rete di partenza: **10.100.0.0/28**
 
 | Nome             | Indirizzo rete     | Primo host     |Primo host     |Broadcast|
-|------------------|---------------|---------------|
+|------------------|---------------|---------------|---|---|
 | SSPriv-1 | 10.100.0.0/28  | 10.100.0.1 |10.100.0.14 |10.100.0.15|
 | SSPriv-2 | 10.100.0.16/28  | 10.100.0.17 |10.100.0.30 |10.100.0.31|
 | SSPriv-3 | 10.100.0.32/28  | 10.100.0.33 |10.100.0.46 |10.100.0.47|
-| SSPriv-4 | 10.100.0.48/28  | 10.100.0.49 |10.100.0.60 |10.100.0.15|
+| SSPriv-4 | 10.100.0.48/28  | 10.100.0.49 |10.100.0.62 |10.100.0.63|
 
 ## Schema grafico
 
@@ -100,7 +100,7 @@ Qui useremo CISCO Packet Tracer per i diagrammi di rete, all'esame consiglio di 
 
 In questo compito, immagino che la Regione acquisti ed installi dei router propri per la comunicazione tra le strutture. In questo scenario, non devo usare VPN o tunnel per far comunicare in sicurezza tra loro gli host, ma posso basarmi solo sui livelli della pila ISO/OSI di rete e trasporto. Potrebbe non essere la soluzione più verosimile, ma è comunque compatibile con il testo, in quanto nel primo paragrafo esplicita chiaramente che _"L’amministrazione di una Regione italiana [...] ha recentemente sviluppato una infrastruttura di comunicazione in fibra ottica"_.
 
-#### Topologia
+#### Topologia rete regionale
 
 Parto impostando i router della rete regionali, ricordandomi di annotare scrupolosamente l'indirizzo base di ogni link e gli indirizzi per ogni porta del router, come nell'immagine che segue.
 
@@ -110,7 +110,7 @@ Come si può vedere dall'immagine, consiglio di specificare esattamente il nome 
 
 Come indirizzi base, per la scuola e l'ospedale non ho messo il primo indirizzo disponibile della rete, ma uno qualsiasi all'interno del loro range.
 
-#### Routing
+#### Routing rete regionale
 
 Ora devo occuparmi di come i routers si scambiano i pacchetti fra di loro, impostando le tabelle di routing.
 
@@ -126,13 +126,13 @@ Per quanto riguarda i router interni, invece, non è ragionevole impostare le ro
 
 Per configurare su Packet Tracer il routing OSPF, posso usare i seguenti comandi:
 
-```sh
-# Abilito OSPF e gli assegno come process ID il valore 100 (interno al router)
+```text
+! Abilito OSPF e gli assegno come process ID il valore 100 (interno al router)
 Router(config)# router ospf 100
-# Assegno il router-id che deve essere **unico** per ogni router all'interno di OSPF
+! Assegno il router-id che deve essere **unico** per ogni router all'interno di OSPF
 Router(config-router)#  router-id 1.1.1.1
 Router(config-router)# exit
-# Ripetere la seguente configurazione per tutte le interfacce del router
+! Ripetere la seguente configurazione per tutte le interfacce del router
 Router(config)# interface ga 0/0
 Router(config-if)# ip ospf 100 area 20
 Router(config-if)# exit
@@ -150,5 +150,64 @@ I router interni dovranno avere una tabella di routing di questo genere, con 2 o
 
 Ora dobbiamo controllare se tutto sta andando bene, provando a fare dei ping. Quando facciamo ping dai routers, conviene usare la funzionalità "Add complex PDU" di PT, selezionando la busta da lettere aperta nella barra in alto. Dopo averla selezionata, cliccare sul router di partenza del ping e completare le impostazioni come necessario.
 
+![Network 6](./assets/net-6.png)
 
+Ricordarsi di selezionare la "Outgoing port" come desiderato, ed impostare Sequence Number e Time a 0.
 
+Nel mio caso, partendo dal router dell'ospedale ho provato ad allontanarmi pian piano fino ad arrivare al router del data center, controllando che ogni volta il ping con tutte le interfacce sia corretto.
+
+![Network 7](./assets/net-7.png)
+
+Ricordatevi di pingare tutte le interfacce che attraversate: nei router intermedi, dovete quindi provare a pingare sia l'interfaccia interna che esterna. Ricordatevi anche che i primi ping potrebbero fallire, quindi "sparateli" più volte per sicurezza se falliscono (tasto "Fire").
+
+#### Reti interne delle strutture
+
+Per le reti interni pre-esistenti, semplificheremo al massimo la topologia, usando un singolo computer per l'ospedale ed la scuola ed un singolo server per il data center. Questi ci serviranno anche in futuro per testare se i requisiti di autenticazione sono rispettati.
+
+Le reti interne delle strutture avranno degli indirizzi IP privati scelti dalla singola struttura. Per semplicità, useremo esempi di indirizzi privati di classe B e C, non di classe A, per non confondersi con la rete regionale. In ogni caso, quanto esposto di seguito andrebbe bene anche se internamente una struttura avesse degli indirizzi privati di classe A.
+
+In questo contesto semplificato, immaginiamo che ospedali e scuole non abbiano dei server interni da esporre, quindi abbiano solo NAT dinamico, per permettere a tutti i computer interni di comunicare con l'esterno. Il data center invece avrà solo NAT statici per esporre i propri server. Nella realtà, è molto probabile che le strutture abbiano una combinazione di NAT statico e dinamico in base alle esigenze. Sempre per esigenze di semplificazione, non implementeremo PAT in packet tracer.
+
+Cominciamo con il con NAT statico del data center.
+
+```text
+! Configure inside interface
+interface GigabitEthernet5/0
+ ip nat inside
+
+! Configure outside interface
+interface GigabitEthernet4/0
+ ip nat outside
+
+! Configure static NAT
+ip nat inside source static 192.168.0.2 10.10.0.10
+
+! Configure access list to allow web traffic
+access-list 101 permit tcp any host 10.10.0.10 eq 80
+access-list 101 permit tcp any host 10.10.0.10 eq 443
+
+! Apply access list to outside interface
+interface GigabitEthernet4/0
+ ip access-group 101 in
+```
+
+Ora configuriamo il NAT dinamico dell'ospedale.
+
+```text
+! Configure inside interface
+interface GigabitEthernet5/0
+ ip nat inside
+
+! Configure outside interface
+interface GigabitEthernet4/0
+ ip nat outside
+
+! Define the pool of public IP addresses
+ip nat pool PUBLIC_POOL 10.20.44.10 10.20.44.20 netmask 255.255.255.0
+
+! Create an access list to define which private IPs can be translated
+access-list 1 permit 172.16.0.0 0.0.255.255
+
+! Configure dynamic NAT
+ip nat inside source list 1 pool PUBLIC_POOL
+```
