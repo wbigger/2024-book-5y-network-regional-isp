@@ -1,0 +1,13 @@
+[book]
+authors = ["Claudio Capobianco"]
+language = "it"
+multilingual = false
+src = "src"
+title = "Sistemi e Reti - Quarto/Quinto Anno - ISP Regionale (Esame di Stato 2024)"
+
+[build]
+create-missing = true
+
+[output.html]
+additional-css = ["custom.css"]
+git-repository-url = "https://github.com/wbigger/2024-book-5y-network-regional-isp"
