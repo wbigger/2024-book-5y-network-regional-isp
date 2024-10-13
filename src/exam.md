@@ -68,4 +68,3 @@ accedere alle reti di tutte le altre strutture connesse alla rete in fibra regio
 ```
 
 La stima del numero di strutture sanitarie convenzionate è già fornito dalla traccia, insieme al numero minimo di dispositivi per sottorete. Queste informazioni ci saranno molto utili anche per avere un'idea di come impostare la rete pre-esistente.
-
