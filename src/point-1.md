@@ -25,7 +25,7 @@ Le subnet che ci servono sono:
 
 A queste, dobbiamo aggiungere una subnet per tutti i router di aggregazione e core della rete regionale (vedremo dopo il suo uso in dettaglio).
 
-La rete di partenza è data dal testo ed è `10.0.0.0\8`.
+La rete di partenza è data dal testo ed è `10.0.0.0/8`.
 
 Quanti bit dedichiamo ad ognuna delle categorie sopra? Prendendo ispirazione dalla rete suggerita dal testo per le strutture private, per semplicità possiamo provare ad assegnare a tutte le categorie un `/16`.
 

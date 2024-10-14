@@ -1,6 +1,6 @@
 # Benvenuti alle dispense di Sistemi e Reti
 
-In queste dispense risolveremo passo passo l'Esame di Stato ITIA 2024 - Sessione Ordinaria, disponibile [qui](https://www.istruzione.it/esame_di_stato/202324/Istituti%20tecnici/Ordinaria/A038_ORD24.pdf).
+In queste dispense risolveremo passo passo l'Esame di Stato ITIA 2024 - Sessione Ordinaria, disponibile presso il [sito del ministero](https://www.istruzione.it/esame_di_stato) dedicato all'Esame di Stato; in particolare la prova in oggetto la trovate [qui](https://www.istruzione.it/esame_di_stato/202324/Istituti%20tecnici/Ordinaria/A038_ORD24.pdf).
 
 > ITIA è l'acronimo di Istituto Tecnico Articolazione Informatica
 

@@ -1,6 +1,6 @@
 # Esame di Stato 2024
 
-L'esame di stato del 2024 chiedeva di realizzare una rete regionale per servire strutture pubbliche e convenzionate.
+L'esame di stato del 2024 chiedeva di realizzare una rete regionale per servire strutture pubbliche e convenzionate. Il PDF con il testo completo lo trovate [qui](https://www.istruzione.it/esame_di_stato/202324/Istituti%20tecnici/Ordinaria/A038_ORD24.pdf).
 
 Ecco il primo paragrafo dell'esame.
 
