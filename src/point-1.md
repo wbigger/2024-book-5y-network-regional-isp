@@ -36,10 +36,11 @@ Quanti bit dedichiamo ad ognuna delle categorie sopra? Prendendo ispirazione dal
 | SS Pub           | 10.20.0.0/16  |
 | Scuole           | 10.30.0.0/16  |
 | Enti Locali      | 10.40.0.0/16  |
-| SS Privato       | 10.100.0.0/16 |
+| SS Priv          | 10.100.0.0/16 |
 
 Ora per ogni categoria dobbiamo calcolare quanti bit servono per la singola struttura, in base alla stima fatta precedentemente. Vediamo come fare.
 
+- Core/Aggregation: in generale i link della rete core sono tutti punto-punto tra due router, quindi `/30`
 - Data center: il data center al momento è uno solo ma possiamo ipotizzare che ce ne potrebbero essere altri, ma in numero comunque ridotto; per semplicità, possiamo assegnare ad ogni singolo data-center un `/24`, per mantenere un subnetting semplice
 - SS Pub: ne abbiamo ipotizzati 100, quindi anche in questo caso per semplicità posso ipotizzare un `/24`, perché tra `/16` della precedente e `/24` ci sono 8 bit, che mi danno la possibilità di 256 reti, ci rientro abbondantemente; inoltre ogni rete avrebbe 8 bit per gli host, quindi `256-2=254` hosts, che consideriamo sufficienti, anche considerando che il testo ci dice che le strutture private ne devono avere almeno 8
 - Scuole: ne abbiamo ipotizzate 1000, qui dobbiamo fare un po' di calcoli. Nel dettaglio, i passi da seguire sono:
@@ -73,19 +74,19 @@ Il piano di indirizzamento è quindi:
 
 | Nome             | Indirizzo     | Singola struttura     |
 |------------------|---------------|---------------|
-| Core/Aggregation | 10.0.0.0/16   | /24 |
+| Core/Aggregation | 10.0.0.0/16   | /30 |
 | Data Center      | 10.10.0.0/16  | /24 |
 | SS Pub           | 10.20.0.0/16  | /24 |
 | Scuole           | 10.30.0.0/16  | /26 |
 | Enti Locali      | 10.40.0.0/16  | /25 |
 | SS Privato       | 10.100.0.0/16 | /28 |
 
-Il testo dell'esame chiede esplicitamente "opportune esemplificazioni degli indirizzamenti
+Il testo dell'esame chiede anche esplicitamente "opportune esemplificazioni degli indirizzamenti
 IP adottati", quindi seguiamo questa direttiva ed elenchiamo le prime quattro reti del SS Privato. Ricordiamo che ogni rete ha 16 indirizzi IP (`2^4`).
 
 Rete di partenza: **10.100.0.0/28**
 
-| Nome             | Indirizzo rete     | Primo host     |Primo host     |Broadcast|
+| Nome             | Indirizzo rete     | Primo host     |Ultimo host     |Broadcast|
 |------------------|---------------|---------------|---|---|
 | SSPriv-1 | 10.100.0.0/28  | 10.100.0.1 |10.100.0.14 |10.100.0.15|
 | SSPriv-2 | 10.100.0.16/28  | 10.100.0.17 |10.100.0.30 |10.100.0.31|
