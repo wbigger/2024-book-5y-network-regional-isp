@@ -181,7 +181,7 @@ interface GigabitEthernet4/0
  ip nat outside
 
 ! Configure static NAT
-ip nat inside source static 192.168.0.2 10.10.0.10
+ip nat inside source static 192.168.0.10 10.10.0.10
 
 ! Configure access list to allow web traffic
 access-list 101 permit tcp any host 10.10.0.10 eq 80
