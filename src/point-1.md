@@ -183,9 +183,10 @@ interface GigabitEthernet4/0
 ! Configure static NAT
 ip nat inside source static 192.168.0.10 10.10.0.10
 
-! Configure access list to allow web traffic
+! Configure access list to allow web traffic and ping
 access-list 101 permit tcp any host 10.10.0.10 eq 80
 access-list 101 permit tcp any host 10.10.0.10 eq 443
+access-list 101 permit icmp any host 10.10.0.10
 
 ! Apply access list to outside interface
 interface GigabitEthernet4/0
@@ -203,12 +204,39 @@ interface GigabitEthernet5/0
 interface GigabitEthernet4/0
  ip nat outside
 
-! Define the pool of public IP addresses
-ip nat pool PUBLIC_POOL 10.20.44.10 10.20.44.20 netmask 255.255.255.0
-
 ! Create an access list to define which private IPs can be translated
 access-list 1 permit 172.16.0.0 0.0.255.255
 
+! Define the pool of public IP addresses
+ip nat pool PUBLIC_POOL 10.20.44.10 10.20.44.20 netmask 255.255.255.0
+
 ! Configure dynamic NAT
 ip nat inside source list 1 pool PUBLIC_POOL
+```
+
+Per controllare che tutto sia andato a buon fine:
+
+```text
+show ip nat statistics
+show ip nat translations
+```
+
+##### Alternativa: PAT
+
+Invece del NAT dinamico, potremmo voler configurare un PAT (Port Address Translation), quindi utilizzando un unico IP per la traduzione e sfruttando il cambiamento di porta dell'host sorgente. La configurazione è molto simile alla precedente, ma invece di specificare il pool di indirizzi è sufficiente mettere quale porta dovrà essere "overloaded".
+
+```text
+! Configure inside interface
+interface GigabitEthernet5/0
+ ip nat inside
+
+! Configure outside interface
+interface GigabitEthernet4/0
+ ip nat outside
+
+! Create an access list to define which private IPs can be translated
+access-list 1 permit 192.168.1.0 0.0.0.255
+
+! Configure PAT (NAT overload) using the outside interface
+ip nat inside source list 1 interface GigabitEthernet0/1 overload
 ```
