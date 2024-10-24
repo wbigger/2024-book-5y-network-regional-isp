@@ -197,7 +197,7 @@ interface GigabitEthernet4/0
  ip access-group 101 in
 ```
 
-Ora configuriamo il NAT dinamico dell'ospedale.
+Ora configuriamo il NAT dinamico dell'ospedale. In questo caso non ho requisiti particolari per le ACL, devo configurare solo quale rete deve essere sotto NAT.
 
 ```text
 ! Configure inside interface
