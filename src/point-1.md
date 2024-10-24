@@ -165,9 +165,13 @@ Ricordatevi di pingare tutte le interfacce che attraversate: nei router intermed
 
 Per le reti interni pre-esistenti, semplificheremo al massimo la topologia, usando un singolo computer per l'ospedale ed la scuola ed un singolo server per il data center. Questi ci serviranno anche in futuro per testare se i requisiti di autenticazione sono rispettati.
 
-Le reti interne delle strutture avranno degli indirizzi IP privati scelti dalla singola struttura. Per semplicità, useremo esempi di indirizzi privati di classe B e C, non di classe A, per non confondersi con la rete regionale. In ogni caso, quanto esposto di seguito andrebbe bene anche se internamente una struttura avesse degli indirizzi privati di classe A.
+Le reti interne delle strutture avranno degli indirizzi IP privati scelti dalla singola struttura. Per semplicità, useremo esempi di indirizzi privati di classe B e C, non di classe A, per non sovrapporsi con la rete regionale.
 
-In questo contesto semplificato, immaginiamo che ospedali e scuole non abbiano dei server interni da esporre, quindi abbiano solo NAT dinamico, per permettere a tutti i computer interni di comunicare con l'esterno. Il data center invece avrà solo NAT statici per esporre i propri server. Nella realtà, è molto probabile che le strutture abbiano una combinazione di NAT statico e dinamico in base alle esigenze. Sempre per esigenze di semplificazione, non implementeremo PAT in packet tracer.
+In questo contesto, immaginiamo che ospedali e scuole non abbiano dei server interni da esporre, quindi abbiano solo NAT dinamico, per permettere a tutti i computer interni di comunicare con l'esterno. Il data center invece avrà solo NAT statici per esporre i propri server. Nella realtà, è probabile che le strutture abbiano una combinazione di NAT statico e dinamico in base alle esigenze. 
+
+Quando si configura il NAT, è fondamentale anche impostare le regole di sicurezza tramite Access Control List per limitare l'accesso solo ad utenti e servizi. Nel nostro caso:
+- vogliamo solo i servizi ping (ICMP) e web, sia in HTTP (TCP porta 80) che HTTPS (TCP porta 73)
+- il testo ci chiede di far accedere al data center del fascicolo solo le strutture sanitarie pubbliche
 
 Cominciamo con il con NAT statico del data center.
 
@@ -184,9 +188,9 @@ interface GigabitEthernet4/0
 ip nat inside source static 192.168.0.10 10.10.0.10
 
 ! Configure access list to allow web traffic and ping
-access-list 101 permit tcp any host 10.10.0.10 eq 80
-access-list 101 permit tcp any host 10.10.0.10 eq 443
-access-list 101 permit icmp any host 10.10.0.10
+access-list 101 permit tcp 10.20.0.0 0.0.255.255 10.10.0.10 eq 80
+access-list 101 permit tcp 10.20.0.0 0.0.255.255 10.10.0.10 eq 443
+access-list 101 permit icmp 10.20.0.0 0.0.255.255 10.10.0.10
 
 ! Apply access list to outside interface
 interface GigabitEthernet4/0
